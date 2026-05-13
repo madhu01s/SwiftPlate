@@ -32,9 +32,6 @@ SwiftPlate was built to reduce the high commission charges imposed by food deliv
 * Customers pay 0% platform fee
 * Affordable and transparent delivery ecosystem
 
-## 📷 Screenshots
-
-(Add your project screenshots here)
 
 ## ▶️ Installation
 
