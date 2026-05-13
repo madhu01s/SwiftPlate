@@ -1,0 +1,540 @@
+{% load static %}
+<!-- htmlhint attr-unsafe-chars:false -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Your Cart | SwiftPlate</title>
+
+    <link rel="stylesheet"
+          href="{% static 'style.css' %}">
+
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'
+          rel='stylesheet'>
+
+</head>
+
+<body>
+
+
+    <!-- ========================= -->
+    <!-- NAVBAR -->
+    <!-- ========================= -->
+
+    <nav class="navbar">
+
+        <a href="{% url 'orders:home' %}" class="logo">
+
+            <i class='bx bxs-bowl-hot'></i>
+
+            SwiftPlate
+
+        </a>
+
+
+        <div class="nav-links">
+
+            <a href="{% url 'orders:home' %}">
+                Home
+            </a>
+
+            {% if user.is_authenticated %}
+
+            <a href="{% url 'orders:my_orders' %}">
+                Orders
+            </a>
+
+            <a href="{% url 'orders:view_cart' %}"
+               class="active-link">
+
+                Cart
+
+            </a>
+
+            <a href="{% url 'orders:logout' %}" class="logout-btn">
+                Logout
+            </a>
+
+            {% else %}
+
+            <a href="{% url 'orders:login' %}" class="login-btn">
+                Login
+            </a>
+
+            {% endif %}
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- ========================= -->
+    <!-- CART SECTION -->
+    <!-- ========================= -->
+
+    <section class="cart-section">
+
+        <div class="cart-wrapper">
+
+
+            <!-- LEFT -->
+
+            <div class="cart-left">
+
+                <div class="cart-header">
+
+                    <h1>
+                        Your Cart
+                    </h1>
+
+                    <p>
+                        Delicious food waiting for checkout.
+                    </p>
+
+                </div>
+
+
+
+                {% for item in cart_items %}
+
+                <div class="cart-card">
+
+                    <!-- IMAGE -->
+
+                    <div class="cart-image">
+
+                        <img src="{{ item.food_item.image.url }}"
+                             alt="{{ item.food_item.name }}">
+
+                    </div>
+
+
+
+                    <!-- INFO -->
+
+                    <div class="cart-info">
+
+                        <div class="cart-top">
+
+                            <div>
+
+                                <h2>
+                                    {{ item.food_item.name }}
+                                </h2>
+
+                                <p>
+                                    ₹{{ item.food_item.price }}
+                                </p>
+
+                            </div>
+
+
+                          <button
+    class="delete-btn"
+    onclick="deleteCartItem({{ item.id }})"
+>
+
+    <i class='bx bx-trash'></i>
+
+</button>
+                        </div>
+
+
+
+                        <!-- QUANTITY -->
+
+                        <div class="quantity-section">
+
+                            <button
+                                onclick="changeQuantity(
+                                    {{ item.id }},
+                                    -1
+                                )">
+
+                                -
+
+                            </button>
+
+
+                            <input
+                                type="number"
+                                min="1"
+                                value="{{ item.quantity }}"
+                                id="qty-{{ item.id }}"
+                            >
+
+
+                            <button
+                                onclick="changeQuantity(
+                                    {{ item.id }},
+                                    1
+                                )">
+
+                                +
+
+                            </button>
+
+                        </div>
+
+
+
+                        <!-- TOTAL -->
+
+                        <div class="item-total">
+
+                            Total :
+                            ₹{{ item.total_price }}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                {% empty %}
+
+                <div class="empty-cart">
+
+                    <i class='bx bx-cart'></i>
+
+                    <h2>
+                        Your Cart is Empty
+                    </h2>
+
+                    <p>
+                        Add delicious food items now.
+                    </p>
+
+                    <a href="{% url 'orders:home' %}"
+                       class="shop-btn">
+
+                        Browse Food
+
+                    </a>
+
+                </div>
+
+                {% endfor %}
+
+            </div>
+
+
+
+            <!-- RIGHT -->
+
+            <div class="cart-right">
+
+                <div class="summary-card">
+
+                    <h2>
+                        Order Summary
+                    </h2>
+
+
+
+                    <div class="summary-row">
+
+                        <span>
+                            Subtotal
+                        </span>
+
+                        <span>
+                            ₹{{ subtotal }}
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="summary-row">
+
+                        <span>
+                            Delivery Fee
+                        </span>
+
+                        <span>
+                            ₹{{ delivery_fee }}
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="summary-row">
+
+                        <span>
+                            GST
+                        </span>
+
+                        <span>
+                            ₹{{ gst }}
+                        </span>
+
+                    </div>
+
+
+
+                    <div class="summary-total">
+
+                        <span>
+                            Grand Total
+                        </span>
+
+                        <span>
+                            ₹{{ grand_total }}
+                        </span>
+
+                    </div>
+
+
+
+                    <a href="{% url 'orders:address' %}">
+
+                        <button class="checkout-btn">
+
+                            Proceed to Checkout
+
+                        </button>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ========================= -->
+    <!-- POPUP -->
+    <!-- ========================= -->
+
+    <div id="custom-popup"
+         class="popup-overlay">
+
+        <div class="popup-box">
+
+            <i class='bx bxs-check-circle success-icon'></i>
+
+            <h3 id="custom-popup-message">
+
+                Success Message
+
+            </h3>
+
+            <button id="custom-popup-ok">
+
+                Continue
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ========================= -->
+    <!-- FOOTER -->
+    <!-- ========================= -->
+
+    <footer class="footer">
+
+        <h2>
+            SwiftPlate
+        </h2>
+
+        <p>
+            Fresh food • Fast delivery • Better taste
+        </p>
+
+    </footer>
+    <form style="display:none;">
+    {% csrf_token %}
+</form>
+
+
+
+    <!-- ========================= -->
+    <!-- SCRIPT -->
+    <!-- ========================= -->
+
+    <script src="{% static 'script.js' %}"></script>
+
+    <script>
+
+        function showPopup(message, onOk) {
+
+            const popup =
+                document.getElementById(
+                    'custom-popup'
+                );
+
+            const msg =
+                document.getElementById(
+                    'custom-popup-message'
+                );
+
+            const okBtn =
+                document.getElementById(
+                    'custom-popup-ok'
+                );
+
+            msg.textContent = message;
+
+            popup.style.display = 'flex';
+
+            okBtn.onclick = function () {
+
+                popup.style.display = 'none';
+
+                if (typeof onOk === 'function') {
+                    onOk();
+                }
+
+            };
+
+        }
+
+
+
+        function updateQuantity(cartId, qty) {
+
+            fetch(`/update-cart/${cartId}/`, {
+
+                method: 'POST',
+
+                headers: {
+
+                    'Content-Type':
+                        'application/json',
+
+                    'X-CSRFToken':
+                        getCSRFToken()
+
+                },
+
+                body: JSON.stringify({
+                    quantity: qty
+                })
+
+            })
+
+            .then(response => response.json())
+
+            .then(data => {
+
+                if (data.success) {
+
+                    location.reload();
+
+                } else {
+
+                    showPopup(
+                        data.message
+                    );
+
+                }
+
+            });
+
+        }
+
+
+
+        function changeQuantity(cartId, change) {
+
+            const input =
+                document.getElementById(
+                    `qty-${cartId}`
+                );
+
+            let qty =
+                parseInt(input.value);
+
+            qty += change;
+
+            if (qty < 1) {
+                qty = 1;
+            }
+
+            input.value = qty;
+
+            updateQuantity(
+                cartId,
+                qty
+            );
+
+        }
+
+
+
+        function deleteItem(cartId) {
+
+            showPopup(
+                "Remove item from cart?",
+                function () {
+
+                    fetch(
+                        `/delete-cart-item/${cartId}/`,
+                        {
+
+                            method: 'POST',
+
+                            headers: {
+
+                                'X-CSRFToken':
+                                    getCSRFToken()
+
+                            }
+
+                        }
+                    )
+
+                    .then(response => response.json())
+
+                    .then(data => {
+
+                        showPopup(
+                            data.message,
+                            function () {
+
+                                location.reload();
+
+                            }
+                        );
+
+                    });
+
+                }
+            );
+
+        }
+
+
+
+        document.getElementById(
+            'custom-popup-ok'
+        ).onclick = function () {
+
+            document.getElementById(
+                'custom-popup'
+            ).style.display = 'none';
+
+        }
+
+    </script>
+
+</body>
+
+</html>

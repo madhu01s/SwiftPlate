@@ -1,0 +1,334 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Confirm Order | SwiftPlate
+    </title>
+
+    <link rel="stylesheet"
+          href="{% static 'style.css' %}">
+
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'
+          rel='stylesheet'>
+
+</head>
+
+<body>
+
+
+    <!-- ========================= -->
+    <!-- NAVBAR -->
+    <!-- ========================= -->
+
+    <nav class="navbar">
+
+        <a href="{% url 'orders:home' %}"
+           class="logo">
+
+            <i class='bx bxs-bowl-hot'></i>
+
+            SwiftPlate
+
+        </a>
+
+
+        <div class="nav-links">
+
+            <a href="{% url 'orders:home' %}">
+                Home
+            </a>
+
+            {% if user.is_authenticated %}
+
+            <a href="{% url 'orders:my_orders' %}">
+                Orders
+            </a>
+
+            <a href="{% url 'orders:view_cart' %}">
+                Cart
+            </a>
+
+            <a href="{% url 'orders:home' %}"
+               class='orders:home'>
+
+                Home
+
+            </a>
+
+            {% else %}
+
+            <a href="{% url 'login' %}"
+               class="login-btn">
+
+                Login
+
+            </a>
+
+            {% endif %}
+
+        </div>
+
+    </nav>
+
+
+
+    <!-- ========================= -->
+    <!-- CONFIRM ORDER SECTION -->
+    <!-- ========================= -->
+
+    <section class="confirm-section">
+
+        <div class="confirm-wrapper">
+
+
+            <!-- LEFT SIDE -->
+
+            <div class="confirm-left">
+
+                <div class="confirm-header">
+
+                    <h1>
+                        Confirm Your Order
+                    </h1>
+
+                    <p>
+                        Review your delivery details
+                        before placing the order.
+                    </p>
+
+                </div>
+
+
+
+                <!-- ADDRESS CARD -->
+
+                <div class="address-summary-card">
+
+                    <div class="address-top">
+
+                        <h2>
+
+                            <i class='bx bx-map'></i>
+
+                            Delivery Address
+
+                        </h2>
+
+                    </div>
+
+
+
+                    <div class="address-details">
+
+                        <p>
+                            <strong>Name :</strong>
+                            {{ address.name }}
+                        </p>
+
+                        <p>
+                            <strong>Phone :</strong>
+                            {{ address.phone }}
+                        </p>
+
+                        <p>
+                            <strong>Area :</strong>
+                            {{ address.area }}
+                        </p>
+
+                        <p>
+                            <strong>City :</strong>
+                            {{ address.city }}
+                        </p>
+
+                        {% if address.landmark %}
+
+                        <p>
+                            <strong>Landmark :</strong>
+                            {{ address.landmark }}
+                        </p>
+
+                        {% endif %}
+
+                        <p>
+                            <strong>District :</strong>
+                            {{ address.district }}
+                        </p>
+
+                        <p>
+                            <strong>Zip Code :</strong>
+                            {{ address.zipcode }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- RIGHT SIDE -->
+
+            <div class="confirm-right">
+
+                <div class="payment-card">
+
+                    <h2>
+
+                        <i class='bx bx-wallet'></i>
+
+                        Select Payment Method
+
+                    </h2>
+
+
+
+                    <!-- CASH ON DELIVERY -->
+
+                    <button
+                        class="payment-btn cod-btn"
+                        onclick="submitOrder('Cash on Delivery')"
+                    >
+
+                        <i class='bx bx-money'></i>
+
+                        Cash on Delivery
+
+                    </button>
+
+
+
+                    <!-- ONLINE PAYMENT -->
+
+                    <button
+                        class="payment-btn online-btn"
+                        onclick="startStripeCheckout()"
+                    >
+
+                        <i class='bx bx-credit-card'></i>
+
+                        Online Payment
+
+                    </button>
+
+
+
+                    <!-- PAYMENT INFO -->
+
+                    <div class="payment-info">
+
+                        <p>
+
+                            <i class='bx bx-check-circle'></i>
+
+                            Secure checkout experience
+
+                        </p>
+
+                        <p>
+
+                            <i class='bx bx-check-circle'></i>
+
+                            Fast delivery guaranteed
+
+                        </p>
+
+                        <p>
+
+                            <i class='bx bx-check-circle'></i>
+
+                            Fresh food quality
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ========================= -->
+    <!-- POPUP -->
+    <!-- ========================= -->
+
+    <div id="custom-popup"
+         class="popup-overlay">
+
+        <div class="popup-box">
+
+            <i class='bx bxs-check-circle success-icon'></i>
+
+            <h3 id="custom-popup-message">
+
+                Success Message
+
+            </h3>
+
+            <button id="custom-popup-ok">
+
+                Continue
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ========================= -->
+    <!-- HIDDEN CSRF TOKEN -->
+    <!-- ========================= -->
+
+    <form style="display:none;">
+
+        {% csrf_token %}
+
+    </form>
+
+
+
+    <!-- ========================= -->
+    <!-- FOOTER -->
+    <!-- ========================= -->
+
+    <footer class="footer">
+
+        <h2>
+            SwiftPlate
+        </h2>
+
+        <p>
+            Fresh food • Fast delivery • Better taste
+        </p>
+
+    </footer>
+
+
+
+    <!-- ========================= -->
+    <!-- SCRIPT -->
+    <!-- ========================= -->
+     <form style="display:none;">
+    {% csrf_token %}
+</form>
+
+    <script src="{% static 'script.js' %}"></script>
+
+</body>
+
+</html>

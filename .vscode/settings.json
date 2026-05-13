@@ -1,0 +1,10 @@
+{
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "html.validate.scripts": false,
+  "html.validate.styles": false,
+  "[django-html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}

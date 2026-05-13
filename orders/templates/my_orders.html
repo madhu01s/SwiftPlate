@@ -1,0 +1,425 @@
+{% load static %}
+<!-- htmlhint attr-unsafe-chars:false -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Orders | SwiftPlate</title>
+
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+
+</head>
+
+<body>
+
+
+    <!-- ========================= -->
+    <!-- NAVBAR -->
+    <!-- ========================= -->
+
+    <nav class="navbar">
+
+        <a href="{% url 'orders:home' %}" class="logo">
+
+            <i class='bx bxs-bowl-hot'></i>
+
+            SwiftPlate
+
+        </a>
+
+
+        <div class="nav-links">
+
+            <a href="{% url 'orders:home' %}">
+                Home
+            </a>
+
+            {% if user.is_authenticated %}
+
+            <a href="{% url 'orders:home' %}"
+               class="active-link">
+                Orders
+            </a>
+
+            <a href="{% url 'orders:view_cart' %}">
+                Cart
+            </a>
+
+            <a href="{% url 'orders:logout' %}" class="logout-btn">
+                Logout
+            </a>
+
+            {% else %}
+
+            <a href="{% url 'login' %}" class="login-btn">
+                Login
+            </a>
+
+            {% endif %}
+
+        </div>
+
+    </nav>
+
+
+    <!-- ========================= -->
+    <!-- NAVBAR -->
+    <!-- ========================= -->
+
+
+
+
+    <!-- ========================= -->
+    <!-- PAGE HEADER -->
+    <!-- ========================= -->
+
+    <section class="orders-hero">
+
+        <div class="orders-hero-content">
+
+            <h1>
+                My Orders
+            </h1>
+
+            <p>
+                Track your recent delicious orders.
+            </p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ========================= -->
+    <!-- ORDERS -->
+    <!-- ========================= -->
+
+    <section class="orders-section">
+
+        <div class="orders-container">
+
+            {% for order in orders %}
+
+            <div class="order-card">
+
+                <!-- TOP -->
+
+                <div class="order-top">
+
+                    <div>
+
+                        <h2>
+                            Order #{{ order.id }}
+                        </h2>
+
+                        <span class="order-date">
+
+                            <i class='bx bx-calendar'></i>
+
+                            {{ order.created_at }}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="order-status">
+
+                        {{ order.status }}
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- ITEMS -->
+
+                <div class="ordered-items">
+
+                    {% for item in order.items.all %}
+
+                    <div class="ordered-item">
+
+                        <div>
+
+                            <h3>
+                                {{ item.food_item.name }}
+                            </h3>
+
+                            <p>
+                                Quantity :
+                                {{ item.quantity }}
+                            </p>
+
+                        </div>
+
+
+                        <div class="item-price">
+
+                            ₹{{ item.price }}
+                        </div>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+
+                <!-- ADDRESS -->
+
+                <div class="delivery-address">
+
+                    <h3>
+
+                        <i class='bx bx-map'></i>
+
+                        Delivery Address
+
+                    </h3>
+
+                    <p>
+                        {{ order.address.name }}
+                    </p>
+
+                    <p>
+                        {{ order.address.phone }}
+                    </p>
+
+                    <p>
+                        {{ order.address.area }},
+                        {{ order.address.city }}
+                    </p>
+
+                    {% if order.address.landmark %}
+
+                    <p>
+                        Landmark :
+                        {{ order.address.landmark }}
+                    </p>
+
+                    {% endif %}
+
+                    <p>
+                        {{ order.address.district }} -
+                        {{ order.address.zipcode }}
+                    </p>
+
+                </div>
+
+
+
+                <!-- BOTTOM -->
+
+                <div class="order-bottom">
+
+                    <div class="total-price">
+
+                        Total :
+                        ₹{{ order.total_price }}
+                    </div>
+
+
+                    <button
+                        onclick="deleteOrder({{ order.id }})"
+                        class="delete-order-btn"
+                    >
+
+                        <i class='bx bx-trash'></i>
+
+                        Delete
+
+                    </button>
+
+                </div>
+
+            </div>
+
+            {% empty %}
+
+            <div class="empty-orders">
+
+                <i class='bx bx-package'></i>
+
+                <h2>
+                    No Orders Yet
+                </h2>
+
+                <p>
+                    Your delicious orders will appear here.
+                </p>
+
+                <a href="{% url 'orders:my_orders' %}" class="shop-btn">
+
+                    Browse Food
+
+                </a>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ========================= -->
+    <!-- POPUP -->
+    <!-- ========================= -->
+
+    <div id="custom-popup" class="popup-overlay">
+
+        <div class="popup-box">
+
+            <i class='bx bxs-check-circle success-icon'></i>
+
+            <h3 id="custom-popup-message">
+
+                Success Message
+
+            </h3>
+
+            <button id="custom-popup-ok">
+
+                Continue
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ========================= -->
+    <!-- FOOTER -->
+    <!-- ========================= -->
+
+    <footer class="footer">
+
+        <h2>
+            SwiftPlate
+        </h2>
+
+        <p>
+            Fresh food • Fast delivery • Better taste
+        </p>
+
+    </footer>
+
+
+
+    <script src="{% static 'script.js' %}"></script>
+
+    <!-- ========================= -->
+    <!-- SCRIPT -->
+    <!-- ========================= -->
+
+    <script>
+
+        function showPopup(message, onOk) {
+
+            const popup =
+                document.getElementById('custom-popup');
+
+            const msg =
+                document.getElementById('custom-popup-message');
+
+            const okBtn =
+                document.getElementById('custom-popup-ok');
+
+            msg.textContent = message;
+
+            popup.style.display = 'flex';
+
+            okBtn.onclick = function () {
+
+                popup.style.display = 'none';
+
+                if (typeof onOk === 'function') {
+                    onOk();
+                }
+
+            };
+
+        }
+
+
+
+        function deleteOrder(orderId) {
+
+            showPopup(
+                "Delete this order history?",
+                function () {
+
+                    fetch(`/delete-order/${orderId}/`, {
+
+                        method: 'POST',
+
+                        headers: {
+
+                            'X-CSRFToken':
+                                getCSRFToken()
+
+                        }
+
+                    })
+
+                    .then(response => response.json())
+
+                    .then(function (data) {
+
+                        showPopup(
+                            data.message ||
+                            "Order deleted!",
+                            function () {
+
+                                location.reload();
+
+                            }
+                        );
+
+                    })
+
+                    .catch(function () {
+
+                        showPopup(
+                            "Failed to delete order."
+                        );
+
+                    });
+
+                }
+            );
+
+        }
+
+
+
+        document.getElementById(
+            'custom-popup-ok'
+        ).onclick = function () {
+
+            document.getElementById(
+                'custom-popup'
+            ).style.display = 'none';
+
+        }
+
+    </script>
+
+</body>
+
+</html>

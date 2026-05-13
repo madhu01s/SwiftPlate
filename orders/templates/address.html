@@ -1,0 +1,513 @@
+{% load static %}
+<!-- htmlhint attr-unsafe-chars:false -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Delivery Address | SwiftPlate</title>
+
+    <link rel="stylesheet"
+          href="{% static 'style.css' %}">
+
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'
+          rel='stylesheet'>
+
+</head>
+
+<body>
+
+
+    <!-- ========================= -->
+    <!-- NAVBAR -->
+    <!-- ========================= -->
+
+    <nav class="navbar">
+
+        <a href="{% url 'orders:home' %}" class="logo">
+
+            <i class='bx bxs-bowl-hot'></i>
+
+            SwiftPlate
+
+        </a>
+
+
+        <div class="nav-links">
+
+            <a href="{% url 'orders:home' %}">
+                Home
+            </a>
+
+            {% if user.is_authenticated %}
+
+            <a href="{% url 'orders:my_orders' %}">
+                Orders
+            </a>
+
+            <a href="{% url 'orders:view_cart' %}">
+                Cart
+            </a>
+
+            <a href="{% url 'orders:logout' %}" class="logout-btn">
+                Logout
+            </a>
+
+            {% else %}
+
+            <a href="{% url 'orders:login' %}" class="login-btn">
+                Login
+            </a>
+
+            {% endif %}
+
+        </div>
+
+    </nav>
+
+
+    <!-- ========================= -->
+    <!-- NAVBAR -->
+    <!-- ========================= -->
+
+    
+
+
+
+    <!-- ========================= -->
+    <!-- ADDRESS SECTION -->
+    <!-- ========================= -->
+
+    <section class="address-section">
+
+        <div class="address-wrapper">
+
+
+            <!-- LEFT SIDE -->
+
+            <div class="address-left">
+
+                <h1>
+                    Delivery Address
+                </h1>
+
+                <p>
+                    Add or select your delivery address.
+                </p>
+
+
+
+                <!-- SAVED ADDRESSES -->
+
+                {% if previous_addresses %}
+
+                <div class="saved-addresses">
+
+                    <h2>
+
+                        <i class='bx bx-map'></i>
+
+                        Saved Addresses
+
+                    </h2>
+
+
+                    <form method="POST">
+
+                        {% csrf_token %}
+
+                        {% for addr in previous_addresses %}
+
+                        <div class="saved-card">
+
+                            <label class="saved-label">
+
+                                <input
+                                    type="radio"
+                                    name="selected_address"
+                                    value="{{ addr.id }}"
+                                >
+
+                                <div>
+
+                                    <h3>
+
+                                        {{ addr.name }}
+
+                                    </h3>
+
+                                    <p>
+
+                                        {{ addr.phone }}
+
+                                    </p>
+
+                                    <p>
+
+                                        {{ addr.area }},
+                                        {{ addr.city }}
+
+                                    </p>
+
+                                    <p>
+
+                                        {{ addr.district }} -
+                                        {{ addr.zipcode }}
+
+                                    </p>
+
+                                    {% if addr.landmark %}
+
+                                    <p>
+
+                                        Landmark :
+                                        {{ addr.landmark }}
+
+                                    </p>
+
+                                    {% endif %}
+
+                                </div>
+
+                            </label>
+
+
+
+                            <button
+                                type="button"
+                                onclick="deleteAddress(
+                                    {{ addr.id }}
+                                )"
+                                class="delete-address-btn"
+                            >
+
+                                <i class='bx bx-trash'></i>
+
+                            </button>
+
+                        </div>
+
+                        {% endfor %}
+
+
+
+                        <button
+                            type="submit"
+                            class="use-address-btn"
+                        >
+
+                            Use Selected Address
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+
+
+            <!-- RIGHT SIDE -->
+
+            <div class="address-right">
+
+                <div class="address-form-card">
+
+                    <h2>
+
+                        <i class='bx bx-plus-circle'></i>
+
+                        Add New Address
+
+                    </h2>
+
+
+
+                    <form method="POST"
+                          class="address-form">
+
+                        {% csrf_token %}
+
+
+                        <div class="form-group">
+
+                            <input
+                                type="text"
+                                name="name"
+                                placeholder="Full Name"
+                                required
+                            >
+
+                        </div>
+
+
+
+                        <div class="form-group">
+
+                            <input
+                                type="text"
+                                name="phone"
+                                placeholder="Phone Number"
+                                required
+                            >
+
+                        </div>
+
+
+
+                        <div class="form-group">
+
+                            <input
+                                type="text"
+                                name="area"
+                                placeholder="Area"
+                                required
+                            >
+
+                        </div>
+
+
+
+                        <div class="form-group">
+
+                            <input
+                                type="text"
+                                name="city"
+                                placeholder="City"
+                                required
+                            >
+
+                        </div>
+
+
+
+                        <div class="form-group">
+
+                            <input
+                                type="text"
+                                name="district"
+                                placeholder="District"
+                                required
+                            >
+
+                        </div>
+
+
+
+                        <div class="form-group">
+
+                            <input
+                                type="text"
+                                name="zipcode"
+                                placeholder="Zip Code"
+                                required
+                            >
+
+                        </div>
+
+
+
+                        <div class="form-group">
+
+                            <input
+                                type="text"
+                                name="landmark"
+                                placeholder="Landmark (Optional)"
+                            >
+
+                        </div>
+
+
+
+                        <button
+                            type="submit"
+                            class="continue-btn"
+                        >
+
+                            Continue
+
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ========================= -->
+    <!-- POPUP -->
+    <!-- ========================= -->
+
+    <div id="custom-popup"
+         class="popup-overlay">
+
+        <div class="popup-box">
+
+            <i class='bx bxs-check-circle success-icon'></i>
+
+            <h3 id="custom-popup-message">
+
+                Success Message
+
+            </h3>
+
+            <button id="custom-popup-ok">
+
+                Continue
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ========================= -->
+    <!-- FOOTER -->
+    <!-- ========================= -->
+
+    <footer class="footer">
+
+        <h2>
+            SwiftPlate
+        </h2>
+
+        <p>
+            Fresh food • Fast delivery • Better taste
+        </p>
+
+    </footer>
+
+    <form style="display:none;">
+    {% csrf_token %}
+</form>
+
+    <script src="{% static 'script.js' %}"></script>
+
+    <!-- ========================= -->
+    <!-- SCRIPT -->
+    <!-- ========================= -->
+
+    <script>
+
+        function showPopup(message, onOk) {
+
+            const popup =
+                document.getElementById(
+                    'custom-popup'
+                );
+
+            const msg =
+                document.getElementById(
+                    'custom-popup-message'
+                );
+
+            const okBtn =
+                document.getElementById(
+                    'custom-popup-ok'
+                );
+
+            msg.textContent = message;
+
+            popup.style.display = 'flex';
+
+            okBtn.onclick = function () {
+
+                popup.style.display = 'none';
+
+                if (typeof onOk === 'function') {
+                    onOk();
+                }
+
+            };
+
+        }
+
+
+
+        function deleteAddress(addressId) {
+
+            showPopup(
+                "Delete this address?",
+                function () {
+
+                    fetch(
+                        `/delete-address/${addressId}/`,
+                        {
+
+                            method: 'POST',
+
+                            headers: {
+
+                                'X-CSRFToken':
+                                    getCSRFToken()
+
+                            }
+
+                        }
+                    )
+
+                    .then(response => response.json())
+
+                    .then(data => {
+
+                        showPopup(
+                            data.message,
+                            function () {
+
+                                if (data.success) {
+
+                                    location.reload();
+
+                                }
+
+                            }
+                        );
+
+                    })
+
+                    .catch(function () {
+
+                        showPopup(
+                            "Failed to delete address."
+                        );
+
+                    });
+
+                }
+            );
+
+        }
+
+
+
+        document.getElementById(
+            'custom-popup-ok'
+        ).onclick = function () {
+
+            document.getElementById(
+                'custom-popup'
+            ).style.display = 'none';
+
+        }
+
+    </script>
+
+</body>
+
+</html>
